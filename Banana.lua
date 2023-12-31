@@ -1,4 +1,4 @@
-﻿BANANA_SYMBOL_COLOR1 = "00f7f26c";
+BANANA_SYMBOL_COLOR1 = "00f7f26c";
 BANANA_SYMBOL_COLOR2 = "00f69218";
 BANANA_SYMBOL_COLOR3 = "00cb32dd";
 BANANA_SYMBOL_COLOR4 = "000fb20a";
@@ -57,7 +57,15 @@ local raidTargetStatus =
 	[9] = {["Count"] = 0,["Target"] = nil,["Players"] = {},},
 }
 
- 
+local raidTargetIconTexCoords = {}
+raidTargetIconTexCoords[1] = { ULx = 0, ULy = 0, LLx = 0, LLy = 0.25, URx = 0.25, URy = 0, LRx =0.25, LRy =0.25}
+raidTargetIconTexCoords[2] = { ULx = 0.25, ULy = 0, LLx = 0.25, LLy = 0.25, URx = 0.5, URy = 0, LRx =0.5, LRy =0.25}
+raidTargetIconTexCoords[3] = { ULx = 0.5, ULy = 0, LLx = 0.5, LLy = 0.25, URx = 0.75, URy = 0, LRx =0.75, LRy =0.25}
+raidTargetIconTexCoords[4] = { ULx = 0.75, ULy = 0, LLx = 0.75, LLy = 0.25, URx = 1, URy = 0, LRx =1, LRy =0.25}
+raidTargetIconTexCoords[5] = { ULx = 0, ULy = 0.25, LLx = 0, LLy = 0.5, URx = 0.25, URy = 0.25, LRx =0.25, LRy =0.5}
+raidTargetIconTexCoords[6] = { ULx = 0.25, ULy = 0.25, LLx = 0.25, LLy = 0.5, URx = 0.5, URy = 0.25, LRx =0.5, LRy =0.5}
+raidTargetIconTexCoords[7] = { ULx = 0.5, ULy = 0.25, LLx = 0.5, LLy = 0.5, URx = 0.75, URy = 0.25, LRx =0.75, LRy =0.5}
+raidTargetIconTexCoords[8] = { ULx = 0.75, ULy = 0.25, LLx = 0.75, LLy = 0.5, URx = 1, URy = 0.25, LRx =1, LRy =0.5}
 
 BANANA_ICON = nil;
 
@@ -401,6 +409,9 @@ function Banana_TargetRaidSymbol(index)
     end
   end;
   if Banana_TargetRaidSymbolUnit("player",index) then
+      return;
+  end
+  if Banana_ScanNameplates(index) then
       return;
   end
   Banana_PlayError();
@@ -1491,4 +1502,55 @@ function Banana_OnUpdateDebug3(unit)
 		end
 		index = index+1;
 	end
+end
+
+function Banana_IsNameplate(frame)
+  if frame:GetObjectType() ~= "Button" then return nil end
+  if not frame:IsShown() then return nil end
+  local child = frame:GetChildren()
+  if not child then return nil end
+  if not child:GetObjectType() == "StatusBar" then return nil end
+  
+  local region = frame:GetRegions()
+  if not region then return nil end
+  if not region:GetObjectType() == "Texture" then return nil end
+  if not region:GetTexture() then return nil end
+  
+  return true
+end
+
+function Banana_ScanNameplates(index)
+  if index == 9 then return nil end
+  local button = raidTargetIconTexCoords[index]
+  if not button then return nil end
+  
+  local bULx = button.ULx;
+  local bULy = button.ULy;
+  local bLLx = button.LLx;
+  local bLLy = button.LLy;
+  local bURx = button.URx;
+  local bURy = button.URy;
+  local bLRx = button.LRx;
+  local bLRy = button.LRy;
+	
+  local frames = { WorldFrame:GetChildren() }
+  for _, nameplate in ipairs(frames) do
+    if Banana_IsNameplate(nameplate) then
+      local _, _, _, _, _ , raidicon = nameplate:GetRegions()
+      local printedmsg = ""
+      if raidicon:GetObjectType() then printedmsg = printedmsg.." / "..raidicon:GetObjectType() end
+	  if raidicon:GetTexture() then
+		if raidicon:GetTexture() == "Interface\\TargetingFrame\\UI-RaidTargetingIcons" then
+		  printedmsg = printedmsg.." = "..raidicon:GetTexture()
+		  local ULx,ULy,LLx,LLy,URx,URy,LRx,LRy = raidicon:GetTexCoord()
+		  if ULx == bULx and ULy == bULy and LLx == bLLx and LLy == bLLy and URx == bURx and URy == bURy and LRx == bLRx and LRy == bLRy then
+			nameplate:Click()
+			Banana_UpdateStatus();
+			return 1
+		  end
+	    end
+	  end
+    end
+  end
+  return nil
 end
