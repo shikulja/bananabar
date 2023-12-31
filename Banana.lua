@@ -1463,7 +1463,7 @@ function Banana_OnUpdateDebug2(unit)
 	        if not BANANA_DEBUG["debuff"][debuffTexture][(debuffDispelType or "none")][DebuffName] then
 			BANANA_DEBUG["debuff"][debuffTexture][(debuffDispelType or "none")][DebuffName] = {};
 		end
-	        if not BANANA_DEBUG["debuff"][debuffTexture][(debuffDispelType or "none")][DebuffName][(debuffApplications or "*")..":"..(BananaTooltipTextLeft2:GetText() or "<nodesc>")] then
+	    		if not BANANA_DEBUG["debuff"][debuffTexture][(debuffDispelType or "none")][DebuffName][(debuffApplications or "*")..":"..(BananaTooltipTextLeft2:GetText() or "<nodesc>")] then
 			BANANA_DEBUG["debuff"][debuffTexture][(debuffDispelType or "none")][DebuffName][(debuffApplications or "*")..":"..(BananaTooltipTextLeft2:GetText() or "<nodesc>")] = un;
 			Banana_Print("Log: "..DebuffName.." "..(debuffApplications or "*"));
 		end
@@ -1537,20 +1537,18 @@ function Banana_ScanNameplates(index)
   for _, nameplate in ipairs(frames) do
     if Banana_IsNameplate(nameplate) then
       local _, _, _, _, _ , raidicon = nameplate:GetRegions()
-      local printedmsg = ""
-      if raidicon:GetObjectType() then printedmsg = printedmsg.." / "..raidicon:GetObjectType() end
-	  if raidicon:GetTexture() then
-		if raidicon:GetTexture() == "Interface\\TargetingFrame\\UI-RaidTargetingIcons" then
-		  printedmsg = printedmsg.." = "..raidicon:GetTexture()
-		  local ULx,ULy,LLx,LLy,URx,URy,LRx,LRy = raidicon:GetTexCoord()
-		  if ULx == bULx and ULy == bULy and LLx == bLLx and LLy == bLLy and URx == bURx and URy == bURy and LRx == bLRx and LRy == bLRy then
-			nameplate:Click()
-			Banana_UpdateStatus();
-			return 1
-		  end
-	    end
-	  end
-    end
-  end
-  return nil
+      if raidicon:GetObjectType() then
+	  		if raidicon:GetTexture() then	
+		  		local ULx,ULy,LLx,LLy,URx,URy,LRx,LRy = raidicon:GetTexCoord()
+						
+		  		if ULx == bULx and ULy == bULy and LLx == bLLx and LLy == bLLy and URx == bURx and URy == bURy and LRx == bLRx and LRy == bLRy then
+		    		nameplate:Click()
+		    		Banana_UpdateStatus();
+		    		return true
+					end
+				end
+			end
+		end
+	end
+	return nil
 end
