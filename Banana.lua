@@ -29,6 +29,8 @@ BANANA_HIDE_UNUSED_BUTTONS = nil;
 BANANA_BUTTON_LAYOUT = nil;
 BANANA_BUTTON_SCALE = nil;
 BANANA_HIDE_BUTTON_FRAMES = nil;
+BANANA_DISABLE_SOUND = nil;
+BANANA_DISABLE_ERROR_TEXT = nil
 BANANA_GREY_OUT_DEATH = nil;
 BANANA_POS = nil;
 BANANA_SHOW_IN_RAID = nil;
@@ -41,6 +43,11 @@ SLASH_BANANA2 = "/bb";
 
 SLASH_BANANABAR1 = "/banana";
 SLASH_BANANABAR2 = "/bbr"; 
+
+SLASH_BANANATARGET1 = "/bbtarget";
+SLASH_BANANATARGET2 = "/bananatarget";
+SLASH_BANANATARGET3 = "/bananabartarget";
+SLASH_BANANATARGET4 = "/bbrtarget";
 
 local BANANA_READY = nil;
 	
@@ -57,15 +64,16 @@ local raidTargetStatus =
 	[9] = {["Count"] = 0,["Target"] = nil,["Players"] = {},},
 }
 
+local BananaShaguPlates = nil
 local raidTargetIconTexCoords = {}
-raidTargetIconTexCoords[1] = { ULx = 0, ULy = 0, LLx = 0, LLy = 0.25, URx = 0.25, URy = 0, LRx =0.25, LRy =0.25}
-raidTargetIconTexCoords[2] = { ULx = 0.25, ULy = 0, LLx = 0.25, LLy = 0.25, URx = 0.5, URy = 0, LRx =0.5, LRy =0.25}
-raidTargetIconTexCoords[3] = { ULx = 0.5, ULy = 0, LLx = 0.5, LLy = 0.25, URx = 0.75, URy = 0, LRx =0.75, LRy =0.25}
-raidTargetIconTexCoords[4] = { ULx = 0.75, ULy = 0, LLx = 0.75, LLy = 0.25, URx = 1, URy = 0, LRx =1, LRy =0.25}
-raidTargetIconTexCoords[5] = { ULx = 0, ULy = 0.25, LLx = 0, LLy = 0.5, URx = 0.25, URy = 0.25, LRx =0.25, LRy =0.5}
-raidTargetIconTexCoords[6] = { ULx = 0.25, ULy = 0.25, LLx = 0.25, LLy = 0.5, URx = 0.5, URy = 0.25, LRx =0.5, LRy =0.5}
-raidTargetIconTexCoords[7] = { ULx = 0.5, ULy = 0.25, LLx = 0.5, LLy = 0.5, URx = 0.75, URy = 0.25, LRx =0.75, LRy =0.5}
-raidTargetIconTexCoords[8] = { ULx = 0.75, ULy = 0.25, LLx = 0.75, LLy = 0.5, URx = 1, URy = 0.25, LRx =1, LRy =0.5}
+raidTargetIconTexCoords[1] = { ULx = 0, ULy = 0}
+raidTargetIconTexCoords[2] = { ULx = 0.25, ULy = 0}
+raidTargetIconTexCoords[3] = { ULx = 0.5, ULy = 0}
+raidTargetIconTexCoords[4] = { ULx = 0.75, ULy = 0}
+raidTargetIconTexCoords[5] = { ULx = 0, ULy = 0.25}
+raidTargetIconTexCoords[6] = { ULx = 0.25, ULy = 0.25}
+raidTargetIconTexCoords[7] = { ULx = 0.5, ULy = 0.25}
+raidTargetIconTexCoords[8] = { ULx = 0.75, ULy = 0.25}
 
 BANANA_ICON = nil;
 
@@ -164,6 +172,7 @@ function Banana_OnLoad()
 	this:RegisterEvent("PLAYER_ENTERING_WORLD");
 	SlashCmdList["BANANA"] = Banana_Command;
 	SlashCmdList["BANANABAR"] = Banana_Command;
+	SlashCmdList["BANANATARGET"] = Banana_TargetCommand;
 end
 
 function Banana_OnEvent()
@@ -245,7 +254,7 @@ end
 --/script Banana_TexCoord(RaidTargetFrame2ButtonTargetSymbol,5)
 function Banana_TexCoord(icon,index)
     if index == 9 then
-        icon:SetTexture("Interface\\AddOns\\Banana\\Images\\HuntermarkArrow");            
+        icon:SetTexture("Interface\\AddOns\\Bananabar\\Images\\HuntermarkArrow");            
         icon:SetTexCoord(0, 1, 0, 1);
         return;
     end
@@ -304,8 +313,8 @@ function Banana_ButtonOnClick(mousebutton)
 			Banana_TargetRaidSymbol(index);
 		else
             Banana_PlayError();
-			Banana_Print("Raid targets can only be used if you are in raid or party."); 
-			Banana_Print("Type /bb, /bbr or /bananabar to open config window and hide unused buttons.");
+			if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Raid targets can only be used if you are in raid or party.") end
+			if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Type /bb, /bbr or /bananabar to open config window and hide unused buttons.") end
 		end
 		return;
 	end
@@ -378,7 +387,7 @@ function Banana_SetRaidSymbol(index)
 	if not UnitExists("target") then
         Banana_TargetRaidSymbol(index);
         if not UnitExists("target") then
-            Banana_Print("Not target selected.");
+            if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Not target selected.") end
             Banana_PlayError();
             return;
         end
@@ -415,7 +424,7 @@ function Banana_TargetRaidSymbol(index)
       return;
   end
   Banana_PlayError();
-  Banana_Print("Nothing to target");
+  if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Nothing to target") end
   Banana_UpdateStatus();
 end
 
@@ -430,7 +439,7 @@ function Banana_TargetRaidSymbolUnit(unit,index)
 		if UnitExists(unit.."target") then
 		    if ( Banana_GetSymbol(unit.."target") == index ) then
 		      TargetUnit(unit.."target");
-		      Banana_Print("Target: "..(UnitName(unit.."target") or "<Unknown>"));
+		      if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Target: "..(UnitName(unit.."target") or "<Unknown>")) end
 		      return 1;
 		    end;
 		end
@@ -776,6 +785,28 @@ function BananaConfig_ValueChangedHideButtonFrames()
 	end
 end
 
+function BananaConfig_ValueChangedDisableSound()
+	if BANANA_READY then
+		if this:GetChecked() then
+			BANANA_DISABLE_SOUND = 1;
+		else
+			BANANA_DISABLE_SOUND = 0;
+		end
+		Banana_UpdateStatus();
+	end
+end
+
+function BananaConfig_ValueChangedDisableErrorText()
+	if BANANA_READY then
+		if this:GetChecked() then
+			BANANA_DISABLE_ERROR_TEXT = 1;
+		else
+			BANANA_DISABLE_ERROR_TEXT = 0;
+		end
+		Banana_UpdateStatus();
+	end
+end
+
 function BananaConfig_ValueChangedGreyOutDeath()
 	if BANANA_READY then
 		if this:GetChecked() then
@@ -820,6 +851,14 @@ function Banana_Command(command)
 	
 end
 
+function Banana_TargetCommand(arg)
+	arg = tonumber(arg)
+	if arg == nil or arg == "" or arg > 9 or arg < 1 then
+		if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("/bananatarget number (Star is 1, skull is 8") end
+		return
+	end
+	Banana_TargetRaidSymbol(arg)
+end
 
 function BananaConfig_Close(command)
 	BananaConfigFrame:Hide();
@@ -834,6 +873,8 @@ function Banana_ResetAll()
 	BANANA_BUTTON_LAYOUT = 3;
 	BANANA_BUTTON_SCALE = 100;
 	BANANA_HIDE_BUTTON_FRAMES = 1;
+	BANANA_DISABLE_SOUND = 0;
+	BANANA_DISABLE_ERROR_TEXT = 0;
 	BANANA_GREY_OUT_DEATH = 0;
     BANANA_SHOW_EXTRA_INFO = 1;
     
@@ -939,6 +980,8 @@ function Banana_ShowDebugInfo()
    Banana_Print("BANANA_BUTTON_LAYOUT "..(BANANA_BUTTON_LAYOUT or "<nil>"));
    Banana_Print("BANANA_BUTTON_SCALE "..(BANANA_BUTTON_SCALE or "<nil>"));
    Banana_Print("BANANA_HIDE_BUTTON_FRAMES "..(BANANA_HIDE_BUTTON_FRAMES or "<nil>"));
+	 Banana_Print("BANANA_DISABLE_SOUND "..(BANANA_DISABLE_SOUND or "<nil>"));
+	 Banana_Print("BANANA_DISABLE_ERROR_TEXT "..(BANANA_DISABLE_ERROR_TEXT or "<nil>"));
    Banana_Print("BANANA_GREY_OUT_DEATH "..(BANANA_GREY_OUT_DEATH or "<nil>"));
    Banana_Print("BANANA_SHOW_IN_RAID "..(BANANA_SHOW_IN_RAID or "<nil>"));
    Banana_Print("BANANA_SHOW_IN_PARTY "..(BANANA_SHOW_IN_PARTY or "<nil>"));
@@ -978,7 +1021,7 @@ end
 function Banana_SpellHuntersmark()
     local spell = Banana_FindSpellNameByTexture(snipershot);
     if spell == nil then
-        Banana_Print("Huntersmark Spell not found");
+        if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Huntersmark Spell not found"); end
         Banana_PlayError();
         return;
     end
@@ -1142,27 +1185,32 @@ function Banana_UpdateDialogFromVariables()
     BananaConfigFrameCheckButtonShowInRaid:SetChecked(BANANA_SHOW_IN_RAID == 1);
     BananaConfigFrameCheckButtonShowInParty:SetChecked(BANANA_SHOW_IN_PARTY == 1);
     BananaConfigFrameCheckButtonShowOutOfGroup:SetChecked(BANANA_SHOW_OUT_OF_GROUP == 1);
-	
     BananaConfigFrameCheckButtonHideUnused:SetChecked(BANANA_HIDE_UNUSED_BUTTONS == 1);
-	BananaConfigFrameCheckButtonHideButtonFrames:SetChecked(BANANA_HIDE_BUTTON_FRAMES == 1);
-	BananaConfigFrameCheckButtonGreyOutDeath:SetChecked(BANANA_GREY_OUT_DEATH == 1);
+		BananaConfigFrameCheckButtonHideButtonFrames:SetChecked(BANANA_HIDE_BUTTON_FRAMES == 1);
+		BananaConfigFrameCheckButtonDisableSound:SetChecked(BANANA_DISABLE_SOUND == 1);
+		BananaConfigFrameCheckButtonDisableErrorText:SetChecked(BANANA_DISABLE_ERROR_TEXT == 1);
+		BananaConfigFrameCheckButtonGreyOutDeath:SetChecked(BANANA_GREY_OUT_DEATH == 1);
     BananaConfigFrameCheckButtonShowExtraInfo:SetChecked(BANANA_SHOW_EXTRA_INFO == 1);
     
 	BananaConfigFrameResizeSlider:SetValue(BANANA_BUTTON_SCALE);
 end
 
 function Banana_PlayError()
-    PlaySoundFile("Interface\\AddOns\\Banana\\Sound\\BananaNo.mp3");
+	if BANANA_DISABLE_SOUND == 1 then return end
+    PlaySoundFile("Interface\\AddOns\\Bananabar\\Sound\\BananaNo.mp3");
 end
 function Banana_PlayRemove1()
-    PlaySoundFile("Interface\\AddOns\\Banana\\Sound\\BananaPlop1.mp3");
+	if BANANA_DISABLE_SOUND == 1 then return end
+    PlaySoundFile("Interface\\AddOns\\Bananabar\\Sound\\BananaPlop1.mp3");
 end
 function Banana_PlayRemoveAll()
-    PlaySoundFile("Interface\\AddOns\\Banana\\Sound\\BananaPlop8.mp3");
+	if BANANA_DISABLE_SOUND == 1 then return end
+    PlaySoundFile("Interface\\AddOns\\Bananabar\\Sound\\BananaPlop8.mp3");
 end
 
 function Banana_PlaySetSymbol()
-    PlaySoundFile("Interface\\AddOns\\Banana\\Sound\\BananaSetSymbol.mp3");
+	if BANANA_DISABLE_SOUND == 1 then return end
+    PlaySoundFile("Interface\\AddOns\\Bananabar\\Sound\\BananaSetSymbol.mp3");
 end
 
 function Banana_GetSymbol(unit)
@@ -1216,9 +1264,9 @@ function Banana_SetSymbol(unit,index)
             SetRaidTarget(unit,index);
             Banana_PlaySetSymbol();
 		else
-            Banana_PlayError();
-			Banana_Print("Raid targets can only be used if you are in raid or party."); 
-			Banana_Print("Type /bb, /bbr or /bananabar to open config window and hide unused buttons.");
+      Banana_PlayError();
+			if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Raid targets can only be used if you are in raid or party."); end
+			if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Type /bb, /bbr or /bananabar to open config window and hide unused buttons."); end
 		end
         return;
     elseif index == 9 then
@@ -1463,7 +1511,7 @@ function Banana_OnUpdateDebug2(unit)
 	        if not BANANA_DEBUG["debuff"][debuffTexture][(debuffDispelType or "none")][DebuffName] then
 			BANANA_DEBUG["debuff"][debuffTexture][(debuffDispelType or "none")][DebuffName] = {};
 		end
-	        if not BANANA_DEBUG["debuff"][debuffTexture][(debuffDispelType or "none")][DebuffName][(debuffApplications or "*")..":"..(BananaTooltipTextLeft2:GetText() or "<nodesc>")] then
+	    		if not BANANA_DEBUG["debuff"][debuffTexture][(debuffDispelType or "none")][DebuffName][(debuffApplications or "*")..":"..(BananaTooltipTextLeft2:GetText() or "<nodesc>")] then
 			BANANA_DEBUG["debuff"][debuffTexture][(debuffDispelType or "none")][DebuffName][(debuffApplications or "*")..":"..(BananaTooltipTextLeft2:GetText() or "<nodesc>")] = un;
 			Banana_Print("Log: "..DebuffName.." "..(debuffApplications or "*"));
 		end
@@ -1511,6 +1559,11 @@ function Banana_IsNameplate(frame)
   if not child then return nil end
   if not child:GetObjectType() == "StatusBar" then return nil end
   
+	if frame:GetNumChildren() == 2 then
+		if not BananaShaguPlates then BananaShaguPlates = true end
+		return true
+	end
+	
   local region = frame:GetRegions()
   if not region then return nil end
   if not region:GetObjectType() == "Texture" then return nil end
@@ -1526,31 +1579,37 @@ function Banana_ScanNameplates(index)
   
   local bULx = button.ULx;
   local bULy = button.ULy;
-  local bLLx = button.LLx;
-  local bLLy = button.LLy;
-  local bURx = button.URx;
-  local bURy = button.URy;
-  local bLRx = button.LRx;
-  local bLRy = button.LRy;
 	
   local frames = { WorldFrame:GetChildren() }
+	
   for _, nameplate in ipairs(frames) do
     if Banana_IsNameplate(nameplate) then
-      local _, _, _, _, _ , raidicon = nameplate:GetRegions()
-      local printedmsg = ""
-      if raidicon:GetObjectType() then printedmsg = printedmsg.." / "..raidicon:GetObjectType() end
-	  if raidicon:GetTexture() then
-		if raidicon:GetTexture() == "Interface\\TargetingFrame\\UI-RaidTargetingIcons" then
-		  printedmsg = printedmsg.." = "..raidicon:GetTexture()
-		  local ULx,ULy,LLx,LLy,URx,URy,LRx,LRy = raidicon:GetTexCoord()
-		  if ULx == bULx and ULy == bULy and LLx == bLLx and LLy == bLLy and URx == bURx and URy == bURy and LRx == bLRx and LRy == bLRy then
-			nameplate:Click()
-			Banana_UpdateStatus();
-			return 1
-		  end
-	    end
-	  end
-    end
-  end
-  return nil
+			if BananaShaguPlates then
+				local baseplate, shaguplate = nameplate:GetChildren()
+				if shaguplate.raidicon:IsShown() then
+					local ULx,ULy = shaguplate.raidicon:GetTexCoord()
+					if ULx == bULx and ULy == bULy then
+						nameplate:Click()
+						Banana_UpdateStatus();
+						return true
+					end
+				end
+			else
+				local _, _, _, _, _ , raidicon = nameplate:GetRegions()
+				if raidicon:IsShown() and raidicon:GetObjectType() then
+					if raidicon:GetTexture() then	
+						local ULx,ULy = raidicon:GetTexCoord()
+						
+						if ULx == bULx and ULy == bULy then
+							nameplate:Click()
+							Banana_UpdateStatus();
+							return true
+						end
+					end
+				end
+			end
+		end
+	end
+	
+	return nil
 end
