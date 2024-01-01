@@ -81,21 +81,3 @@ In this dialog you can change the size of the buttons.
 
 The complete settings dialog is reset to default values, also the button positions are reset to default positions. This button should help if something strange happened.
 For example, use this button if there is a bug and the buttons are gone away.
-
-
-
-
-
-If you find this Addon useful feel free to send some beer to Germany:
-
-Carsten Jendro
-Vahrenwalder Strasse 34
-30165 Hannover, Germany
-
-
-If you like to have personal enhancements to this Addon send more beer to
-
-Carsten Jendro
-Vahrenwalder Strasse 34
-30165 Hannover, Germany
-
