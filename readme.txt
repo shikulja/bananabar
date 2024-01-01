@@ -1,14 +1,18 @@
 ﻿How to Use: 
 
+Left mouse on raid symbol or hunters mark button: 
+Search for a mob with the specified symbol. BananaBar searches all raid or party members and their current targets for the specified symbol or hunters mark. If a unit is found that contains the specific symbol it will be targeted.
+If no units are found an error sound is played.
+
+
+Chat command /bananatarget 1-8    or    /bbtarget 1-8
+Mark 1 is star, mark 8 is skull, the rest are easy to deduce. This allows you to use the addon's functionality in a macro.
+
 Ctrl+Leftmouse on raid symbol button: 
 Set a raid symbol to your actual target, if the actual target has already the specified symbol, the symbol will be removed (works only if you are raid leader or raid officer or party leader) 
 
 Ctrl+Leftmouse on hunters mark button: 
-Set hunters mark to your actual target (works only if you are hunter of course) 
-
-Left mouse on raid symbol or hunters mark button: 
-Search for a mob with the specified symbol. BananaBar searches all raid or party members and their current targets for the specified symbol or hunters mark. If a unit is found that contains the specific symbol it will be targeted.
-If no units are found an error sound is played.
+Set hunters mark to your actual target (works only if you are hunter of course)
 
 Ctrl+Rightmouse: 
 Move the Buttons over the screen 
@@ -36,6 +40,14 @@ Settings dialog can be opened with one of the following commands
 The /bb shortcut may not work for some users because “Breakable ButtonBar” is using the same command. 
 
 You can also open the configuration window via keyboard shortcut.
+
+[X] Disable Sound
+
+If checked the addon won't play any sounds
+
+[X] Disable Error Text
+
+If checked the addon won't warn you in the chat frame if it doesn't find the marked target
 
 [X] Show buttons in raid
 
