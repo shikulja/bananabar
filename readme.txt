@@ -1,4 +1,6 @@
-﻿How to Use: 
+# DELETE OLD "BANANA" FILE WHEN YOU DOWNLOAD "BANANABAR"
+
+How to Use: 
 
 Left mouse on raid symbol or hunters mark button: 
 Search for a mob with the specified symbol. BananaBar searches all raid or party members and their current targets for the specified symbol or hunters mark. If a unit is found that contains the specific symbol it will be targeted.
