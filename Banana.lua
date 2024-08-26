@@ -614,6 +614,13 @@ function ScanNpcs()
 		if UnitExists(m) then
 			raidTargetStatus[i].Target = UnitName(m)
 		end
+		if not BANANA_ICON[i].IsDeath then
+			if UnitIsDead(m) then
+				BANANA_ICON[i].IsDeath = 1;
+			else
+				BANANA_ICON[i].IsDeath = 0;
+			end
+		end
 	end
 end
 
