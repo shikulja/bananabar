@@ -24,7 +24,7 @@ BINDING_NAME_BANANA_TARGET_SYMBOL9 = "Target Symbol 9 (Huntersmark)";
 
 --"Interface\TargetingFrame\UI-RaidTargetingIcons"
 local snipershot = "Interface\\Icons\\Ability_Hunter_SniperShot";
-
+local superwow = SetAutoloot and true or false
 BANANA_HIDE_UNUSED_BUTTONS = nil;
 BANANA_BUTTON_LAYOUT = nil;
 BANANA_BUTTON_SCALE = nil;
@@ -423,6 +423,11 @@ function Banana_TargetRaidSymbol(index)
   if Banana_ScanNameplates(index) then
       return;
   end
+  if superwow then
+	if Banana_TargetRaidSymbolUnit("mark" .. index, index) then
+		return;
+	end
+  end
   Banana_PlayError();
   if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Nothing to target") end
   Banana_UpdateStatus();
@@ -513,6 +518,7 @@ function Banana_UpdateStatus()
         if BANANA_SHOW_IN_RAID == 1 then
             Banana_UpdateStatusInit();
             Banana_UpdateStatusPlayerLoop("RAID",40);
+			ScanNpcs()
             Banana_UpdateStatusUpdate();
         else
             for index = 1, 9, 1 do
@@ -524,6 +530,7 @@ function Banana_UpdateStatus()
         if BANANA_SHOW_IN_PARTY == 1 then
             Banana_UpdateStatusInit();
             Banana_UpdateStatusPlayerLoop("PARTY",5);
+			ScanNpcs()
             Banana_UpdateStatusUpdate();
         else
             for index = 1, 9, 1 do
@@ -535,6 +542,7 @@ function Banana_UpdateStatus()
         if BANANA_SHOW_OUT_OF_GROUP == 1 then
             Banana_UpdateStatusInit();
             Banana_UpdateStatusPlayerLoop("PARTY",5);
+			ScanNpcs()
             Banana_UpdateStatusUpdate();
         else
             for index = 1, 9, 1 do
@@ -597,6 +605,16 @@ function Banana_UpdateStatusPlayerLoop(prefix,count)
         end
     end
     
+end
+
+function ScanNpcs()
+	if not superwow then return end
+	for i = 1, 8 do
+		local m = "mark" .. i
+		if UnitExists(m) then
+			raidTargetStatus[i].Target = UnitName(m)
+		end
+	end
 end
 
 function Banana_UpdateTargetSymbol(unit,symbol)
