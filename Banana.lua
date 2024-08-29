@@ -181,8 +181,9 @@ function Banana_OnEvent()
 		if not BANANA_READY then
 			Banana_InitArrays();
 		end
-		
 		Banana_Print("Banana Raid Symbols loaded. Type /bb, /bbr, /banana or /bananabar to open config panel.");
+		Banana_Print("Use Ctrl + RightClick to move buttons")
+		Banana_Print("Use Alt + LeftClick to clear all existing symbols")
 
 		if not BANANA_SHOW_EXTRA_INFO then
 			Banana_Print("First start of BananaBar detected, showing config window.");
@@ -237,14 +238,14 @@ function Banana_OnUpdateTick()
 		if BANANA_CLEAR_PLAYER_SYMBOL > 0 then
 			BANANA_CLEAR_PLAYER_SYMBOL = BANANA_CLEAR_PLAYER_SYMBOL - 1;
 			if Banana_GetSymbol("PLAYER") then
-				Banana_Print("Clearing own symbol again try "..BANANA_CLEAR_PLAYER_SYMBOL_TRY.." (fix for a wow bug)");
+				--Banana_Print("Clearing own symbol again try "..BANANA_CLEAR_PLAYER_SYMBOL_TRY.." (fix for a wow bug)");
 				BANANA_CLEAR_PLAYER_SYMBOL_TRY = BANANA_CLEAR_PLAYER_SYMBOL_TRY+1;
 				Banana_SetSymbol("PLAYER",0);
 			else
 				BANANA_CLEAR_PLAYER_SYMBOL_TRY = 1;
 			end
 			if BANANA_CLEAR_PLAYER_SYMBOL == 0 and Banana_GetSymbol("PLAYER") then
-				Banana_Print("Clearing own symbol failed");
+				--Banana_Print("Clearing own symbol failed");
 				BANANA_CLEAR_PLAYER_SYMBOL_TRY = 1;
 			end
 		end
@@ -278,8 +279,11 @@ function Banana_RaidTargetButtonOnLoad()
 	local icon = getglobal(this:GetName().."Icon");
     Banana_TexCoord(icon,index)
 end
-
+local function InGroupOrRaid()
+	return (GetNumPartyMembers() + GetNumRaidMembers() > 0)
+end
 function Banana_CanSetSymbols()
+	if superwow and not InGroupOrRaid() then return 1 end
     if GetNumRaidMembers() > 0 then
         if IsRaidOfficer() or IsRaidLeader() then
             return 1;
@@ -293,6 +297,7 @@ function Banana_CanSetSymbols()
     return nil;
 end
 function Banana_CanUseSymbols()
+	if superwow and not InGroupOrRaid() then return 1 end
     if GetNumRaidMembers() > 0 then
         return 1;
     end
@@ -305,10 +310,19 @@ end
 function Banana_ButtonOnClick(mousebutton)
 	local index = tonumber(string.sub(this:GetName(),16,-7));
 	if (IsControlKeyDown()) and mousebutton == "LeftButton" then 
-		Banana_SetRaidSymbol(index);
+		if BANANA_HIDE_UNUSED_BUTTONS ~= 1 then Banana_SetRaidSymbol(index)
+		elseif UnitName("target") == nil or index == GetRaidTargetIndex("target") then
+			Banana_TargetRaidSymbol(index)
+			Banana_SetSymbol("target", 0)
+			ClearTarget()
+		else
+			Banana_TargetRaidSymbol(index)
+			Banana_SetSymbol("target", 0)
+			TargetLastTarget()
+		end
 		return;
 	end
-	if (not IsControlKeyDown()) and mousebutton == "LeftButton" then 
+	if (not IsControlKeyDown()) and (not IsAltKeyDown()) and mousebutton == "LeftButton" then 
 		if Banana_CanUseSymbols() then
 			Banana_TargetRaidSymbol(index);
 		else
@@ -322,7 +336,12 @@ function Banana_ButtonOnClick(mousebutton)
 		--moving
 		return;
 	end
-	Banana_Print("Use Ctrl+RightMouseButtonc to move buttons");
+	if (IsAltKeyDown()) and mousebutton == "LeftButton" then 
+		Banana_ClearRaidSymbols()
+		return
+	end
+	Banana_Print("Use Ctrl + RightClick to move buttons")
+	Banana_Print("Use Alt + LeftClick to clear all existing symbols")
 end
  
 local movingbutton = nil;
@@ -1281,19 +1300,19 @@ end
 function Banana_SetSymbol(unit,index)
     if index == 0 then
         if Banana_CanSetSymbols() then
-            SetRaidTarget(unit,index);
+            if superwow and not InGroupOrRaid() then SetRaidTarget(unit,index,1) else SetRaidTarget(unit,index) end;
 		end
         return;
     elseif index <= 8 then
         if Banana_CanSetSymbols() then
-            SetRaidTarget(unit,index);
+            if superwow and not InGroupOrRaid() then SetRaidTarget(unit,index,1) else SetRaidTarget(unit,index) end;
             Banana_PlaySetSymbol();
 		else
       Banana_PlayError();
 			if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Raid targets can only be used if you are in raid or party."); end
 			if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Type /bb, /bbr or /bananabar to open config window and hide unused buttons."); end
-		end
-        return;
+        end
+		return;
     elseif index == 9 then
         Banana_SpellHuntersmark();
         Banana_PlaySetSymbol();
@@ -1638,3 +1657,48 @@ function Banana_ScanNameplates(index)
 	
 	return nil
 end
+--SuperWoW targeting while out of group (thanks to https://github.com/MarcelineVQ/AutoMarker)
+local function PostHookFunction(original, hook)
+	return function(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
+		original(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
+		hook(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
+	end
+end
+
+local function Banana_UnitPopup_HideButtons()
+	local dropdownMenu = getglobal(UIDROPDOWNMENU_INIT_MENU);
+
+	for index, value in UnitPopupMenus[dropdownMenu.which] do
+		if (strsub(value, 1, 12) == "RAID_TARGET_") then
+			UnitPopupShown[index] = 1;
+		end
+	end
+end
+UnitPopup_HideButtons = PostHookFunction(UnitPopup_HideButtons, Banana_UnitPopup_HideButtons)
+
+local function Banana_UnitPopup_OnClick()
+	local dropdownFrame = getglobal(UIDROPDOWNMENU_INIT_MENU);
+	local button = this.value;
+	local unit = dropdownFrame.unit;
+	
+	if (strsub(button, 1, 12) == "RAID_TARGET_" and button ~= "RAID_TARGET_ICON") then
+		local raidTargetIndex = strsub(button, 13);
+		local index = tonumber(raidTargetIndex)
+		if (raidTargetIndex == "NONE" or this.checked) then
+			Banana_RemoveRaidSymbol(index);
+		else
+			Banana_SetSymbol(unit, index)
+		end
+	end
+	PlaySound("UChatScrollButton");
+end
+UnitPopup_OnClick = PostHookFunction(UnitPopup_OnClick, Banana_UnitPopup_OnClick)
+
+function Banana_SetRaidTargetIcon(unit, index)
+	if (GetRaidTargetIndex(unit) and GetRaidTargetIndex(unit) == index) then
+		Banana_SetSymbol(unit, 0);
+	else
+		Banana_SetSymbol(unit, index);
+	end
+end
+SetRaidTargetIcon = PostHookFunction(SetRaidTargetIcon, Banana_SetRaidTargetIcon)
