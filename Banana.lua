@@ -169,14 +169,14 @@ end
 
 
 function Banana_OnLoad()
-	this:RegisterEvent("PLAYER_ENTERING_WORLD");
+	this:RegisterEvent("ADDON_LOADED");
 	SlashCmdList["BANANA"] = Banana_Command;
 	SlashCmdList["BANANABAR"] = Banana_Command;
 	SlashCmdList["BANANATARGET"] = Banana_TargetCommand;
 end
 
 function Banana_OnEvent()
-	if ( event == "PLAYER_ENTERING_WORLD" ) then
+	if ( event == "ADDON_LOADED" ) and arg1 == "bananabar"then
 		
 		if not BANANA_READY then
 			Banana_InitArrays();
@@ -761,7 +761,7 @@ end
 
 
 function Banana_UpdateScale()
-    Banana_Print("scale:"..(BANANA_BUTTON_SCALE or "?"));
+    --Banana_Print("scale:"..(BANANA_BUTTON_SCALE or "?"));
 	Banana_UpdateFrameScale(RaidTargetFrame1Button,BANANA_BUTTON_SCALE / 100)		
 	Banana_UpdateFrameScale(RaidTargetFrame2Button,BANANA_BUTTON_SCALE / 100)		
 	Banana_UpdateFrameScale(RaidTargetFrame3Button,BANANA_BUTTON_SCALE / 100)		
@@ -1658,47 +1658,60 @@ function Banana_ScanNameplates(index)
 	return nil
 end
 --SuperWoW targeting while out of group (thanks to https://github.com/MarcelineVQ/AutoMarker)
-local function PostHookFunction(original, hook)
-	return function(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
-		original(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
-		hook(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
-	end
-end
-
-local function Banana_UnitPopup_HideButtons()
-	local dropdownMenu = getglobal(UIDROPDOWNMENU_INIT_MENU);
-
-	for index, value in UnitPopupMenus[dropdownMenu.which] do
-		if (strsub(value, 1, 12) == "RAID_TARGET_") then
-			UnitPopupShown[index] = 1;
+local function IsLoaded(addonname)
+	for i=1, GetNumAddOns() do
+		local name, title, notes, enabled, loadable, reason, security = GetAddOnInfo(i)
+		if name == addonname then
+			return enabled
 		end
 	end
 end
-UnitPopup_HideButtons = PostHookFunction(UnitPopup_HideButtons, Banana_UnitPopup_HideButtons)
+if not IsLoaded("AutoMarker") then
+	local function PostHookFunction(original, hook)	
+		return function(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
+			original(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
+			hook(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)
+		end
+	end
 
-local function Banana_UnitPopup_OnClick()
-	local dropdownFrame = getglobal(UIDROPDOWNMENU_INIT_MENU);
-	local button = this.value;
-	local unit = dropdownFrame.unit;
+	local function Banana_UnitPopup_HideButtons()
+		local dropdownMenu = getglobal(UIDROPDOWNMENU_INIT_MENU);
+
+		for index, value in UnitPopupMenus[dropdownMenu.which] do
+			if (strsub(value, 1, 12) == "RAID_TARGET_") then
+				UnitPopupShown[index] = 1;
+			end
+		end
+	end
+
+	UnitPopup_HideButtons = PostHookFunction(UnitPopup_HideButtons, Banana_UnitPopup_HideButtons)
+
+	local function Banana_UnitPopup_OnClick()
+		local dropdownFrame = getglobal(UIDROPDOWNMENU_INIT_MENU);
+		local button = this.value;
+		local unit = dropdownFrame.unit;
+
+		if (strsub(button, 1, 12) == "RAID_TARGET_" and button ~= "RAID_TARGET_ICON") then
+			local raidTargetIndex = strsub(button, 13);
+			local index = tonumber(raidTargetIndex)
+			if (raidTargetIndex == "NONE" or this.checked) then
+				Banana_RemoveRaidSymbol(index);
+			else
+				Banana_SetSymbol(unit, index)
+			end
+		end
+		PlaySound("UChatScrollButton");
+	end
 	
-	if (strsub(button, 1, 12) == "RAID_TARGET_" and button ~= "RAID_TARGET_ICON") then
-		local raidTargetIndex = strsub(button, 13);
-		local index = tonumber(raidTargetIndex)
-		if (raidTargetIndex == "NONE" or this.checked) then
-			Banana_RemoveRaidSymbol(index);
+	UnitPopup_OnClick = PostHookFunction(UnitPopup_OnClick, Banana_UnitPopup_OnClick)
+
+	function Banana_SetRaidTargetIcon(unit, index)
+		if (GetRaidTargetIndex(unit) and GetRaidTargetIndex(unit) == index) then
+			Banana_SetSymbol(unit, 0);
 		else
-			Banana_SetSymbol(unit, index)
+			Banana_SetSymbol(unit, index);
 		end
 	end
-	PlaySound("UChatScrollButton");
-end
-UnitPopup_OnClick = PostHookFunction(UnitPopup_OnClick, Banana_UnitPopup_OnClick)
 
-function Banana_SetRaidTargetIcon(unit, index)
-	if (GetRaidTargetIndex(unit) and GetRaidTargetIndex(unit) == index) then
-		Banana_SetSymbol(unit, 0);
-	else
-		Banana_SetSymbol(unit, index);
-	end
+	SetRaidTargetIcon = PostHookFunction(SetRaidTargetIcon, Banana_SetRaidTargetIcon)
 end
-SetRaidTargetIcon = PostHookFunction(SetRaidTargetIcon, Banana_SetRaidTargetIcon)
