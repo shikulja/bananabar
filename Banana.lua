@@ -186,7 +186,7 @@ function Banana_OnEvent()
 		Banana_Print("Use Alt + LeftClick to clear all existing symbols")
 
 		if not BANANA_SHOW_EXTRA_INFO then
-			Banana_Print("First start of BananaBar detected, showing config window.");
+			--Banana_Print("First start of BananaBar detected, showing config window.");
 			UIDropDownMenu_Initialize(BananaConfigFrameComboBoxLayout, Banana_ComboBoxLayout_Initialize); 
 			Banana_ResetAll()
 			BananaConfigFrame:Show();
@@ -327,8 +327,8 @@ function Banana_ButtonOnClick(mousebutton)
 			Banana_TargetRaidSymbol(index);
 		else
             Banana_PlayError();
-			if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Raid targets can only be used if you are in raid or party.") end
-			if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Type /bb, /bbr or /bananabar to open config window and hide unused buttons.") end
+			--if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Raid targets can only be used if you are in raid or party.") end
+			--if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Type /bb, /bbr or /bananabar to open config window and hide unused buttons.") end
 		end
 		return;
 	end
@@ -351,7 +351,7 @@ function Banana_ButtonOnMouseDown(mousebutton)
 		local index = Banana_IndexFromButtonName(this:GetName());
 		if not movingbutton then
 			if getglobal("RaidTargetFrame"..BANANA_ICON[index].MovingButton.."Button"):IsMovable() then
-				Banana_Debug("Start Moving Button "..index);
+				--Banana_Debug("Start Moving Button "..index);
 				movingbutton = index;
 				getglobal("RaidTargetFrame"..BANANA_ICON[index].MovingButton.."Button"):StartMoving();
 			end
@@ -365,7 +365,7 @@ end
 function Banana_ButtonOnMouseUp(mousebutton)
 	local index = tonumber(string.sub(this:GetName(),16,-7));
 	if movingbutton then
-		Banana_Debug("Stop Moving Button "..movingbutton);
+		--Banana_Debug("Stop Moving Button "..movingbutton);
 		getglobal("RaidTargetFrame"..BANANA_ICON[movingbutton].MovingButton.."Button"):StopMovingOrSizing();
 		getglobal("RaidTargetFrame"..BANANA_ICON[movingbutton].MovingButton.."Button"):SetUserPlaced(false);
 		Banana_SaveFramePos(getglobal("RaidTargetFrame"..BANANA_ICON[movingbutton].MovingButton.."Button"));
@@ -406,7 +406,7 @@ function Banana_SetRaidSymbol(index)
 	if not UnitExists("target") then
         Banana_TargetRaidSymbol(index);
         if not UnitExists("target") then
-            if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Not target selected.") end
+            --if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Not target selected.") end
             Banana_PlayError();
             return;
         end
@@ -448,7 +448,7 @@ function Banana_TargetRaidSymbol(index)
 	end
   end
   Banana_PlayError();
-  if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Nothing to target") end
+  --if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Nothing to target") end
   Banana_UpdateStatus();
 end
 
@@ -463,7 +463,7 @@ function Banana_TargetRaidSymbolUnit(unit,index)
 		if UnitExists(unit.."target") then
 		    if ( Banana_GetSymbol(unit.."target") == index ) then
 		      TargetUnit(unit.."target");
-		      if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Target: "..(UnitName(unit.."target") or "<Unknown>")) end
+		      --if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Target: "..(UnitName(unit.."target") or "<Unknown>")) end
 		      return 1;
 		    end;
 		end
@@ -858,7 +858,7 @@ function BananaConfig_ValueChangedGreyOutDeath()
 		else
 			BANANA_GREY_OUT_DEATH = 0;
 		end
-        Banana_Print("BANANA_GREY_OUT_DEATH="..BANANA_GREY_OUT_DEATH);
+        --Banana_Print("BANANA_GREY_OUT_DEATH="..BANANA_GREY_OUT_DEATH);
 		Banana_UpdateStatus();
 	end
 end
@@ -898,7 +898,7 @@ end
 function Banana_TargetCommand(arg)
 	arg = tonumber(arg)
 	if arg == nil or arg == "" or arg > 9 or arg < 1 then
-		if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("/bananatarget number (Star is 1, skull is 8") end
+		--if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("/bananatarget number (Star is 1, skull is 8") end
 		return
 	end
 	Banana_TargetRaidSymbol(arg)
@@ -909,7 +909,7 @@ function BananaConfig_Close(command)
 end
 
 function Banana_ResetAll()
-	Banana_Print("Loading defaults.");
+	--Banana_Print("Loading defaults.");
     BANANA_SHOW_IN_RAID = 1;
     BANANA_SHOW_IN_PARTY = 1;
     BANANA_SHOW_OUT_OF_GROUP = 0;
@@ -1065,7 +1065,7 @@ end
 function Banana_SpellHuntersmark()
     local spell = Banana_FindSpellNameByTexture(snipershot);
     if spell == nil then
-        if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Huntersmark Spell not found"); end
+        --if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Huntersmark Spell not found"); end
         Banana_PlayError();
         return;
     end
@@ -1145,7 +1145,7 @@ function Banana_CtRaMainTankUpdateByIndex(mtindex)
 end
 
 function Banana_ClearRaidSymbols()
-	Banana_Print("Clearing all raid symbols");
+	--Banana_Print("Clearing all raid symbols");
     Banana_PlayRemoveAll();
     Banana_SetSymbol("PLAYER",1);
    	Banana_SetSymbol("PLAYER",2);
@@ -1309,8 +1309,8 @@ function Banana_SetSymbol(unit,index)
             Banana_PlaySetSymbol();
 		else
       Banana_PlayError();
-			if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Raid targets can only be used if you are in raid or party."); end
-			if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Type /bb, /bbr or /bananabar to open config window and hide unused buttons."); end
+			--if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Raid targets can only be used if you are in raid or party."); end
+			--if BANANA_DISABLE_ERROR_TEXT ~= 1 then Banana_Print("Type /bb, /bbr or /bananabar to open config window and hide unused buttons."); end
         end
 		return;
     elseif index == 9 then
