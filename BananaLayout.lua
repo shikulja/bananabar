@@ -26,7 +26,7 @@ end
 
 
 function Banana_Layout1()
-	Banana_Print("Layout 1");
+	--Banana_Print("Layout 1");
 
 	RaidTargetFrame1Button:SetMovable(true);
 	RaidTargetFrame2Button:SetMovable(false);
@@ -67,7 +67,7 @@ function Banana_Layout1()
 end
 
 function Banana_Layout2()
-	Banana_Print("Layout 2");
+	--Banana_Print("Layout 2");
 	RaidTargetFrame1Button:SetMovable(true);
 	RaidTargetFrame2Button:SetMovable(false);
 	RaidTargetFrame3Button:SetMovable(false);
@@ -109,7 +109,7 @@ function Banana_Layout2()
 end
 
 function Banana_Layout3()
-	Banana_Print("Layout 3");
+	--Banana_Print("Layout 3");
 	RaidTargetFrame1Button:SetMovable(true);
 	RaidTargetFrame2Button:SetMovable(false);
 	RaidTargetFrame3Button:SetMovable(false);
@@ -150,7 +150,7 @@ function Banana_Layout3()
 end
 
 function Banana_Layout4()
-	Banana_Print("Layout 4");
+	--Banana_Print("Layout 4");
 	RaidTargetFrame1Button:SetMovable(true);
 	RaidTargetFrame2Button:SetMovable(false);
 	RaidTargetFrame3Button:SetMovable(false);
@@ -190,7 +190,7 @@ function Banana_Layout4()
 end
 
 function Banana_Layout5()
-	Banana_Print("Layout 5");
+	--Banana_Print("Layout 5");
 	
 	RaidTargetFrame1Button:SetMovable(true);
 	RaidTargetFrame2Button:SetMovable(true);
