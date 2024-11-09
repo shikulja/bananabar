@@ -62,7 +62,7 @@
             </Anchors>
             <Layers>
               <Layer>
-                <FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="Info Icon Priority" justifyH="LEFT">
+                <FontString name="$parentLabel" font="Fonts\FRIZQT__.TTF" text="LOC_INFO_ICON_PRIORITY" justifyH="LEFT">
                   <Anchors>
                     <Anchor point="TOPLEFT" />
                     <Anchor point="BOTTOMRIGHT" />
@@ -1405,7 +1405,7 @@
             </Anchors>
             <Layers>
               <Layer>
-                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Show target extra info">
+                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="LOC_SHOW_TARGET_EXTRA_INFO">
                   <Anchors>
                     <Anchor point="LEFT" relativePoint="RIGHT">
                       <Offset>
@@ -1456,7 +1456,7 @@
             </Anchors>
             <Layers>
               <Layer>
-                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Grey out death targets">
+                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="LOC_GREY_OUT_DEATH_TARGETS">
                   <Anchors>
                     <Anchor point="LEFT" relativePoint="RIGHT">
                       <Offset>
@@ -1507,7 +1507,7 @@
             </Anchors>
             <Layers>
               <Layer>
-                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Show buttons out of group">
+                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="LOC_SHOW_BUTTONS_OUT_OF_GROUP">
                   <Anchors>
                     <Anchor point="LEFT" relativePoint="RIGHT">
                       <Offset>
@@ -1558,7 +1558,7 @@
             </Anchors>
             <Layers>
               <Layer>
-                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Show buttons in party">
+                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="LOC_SHOW_BUTTONS_IN_PARTY">
                   <Anchors>
                     <Anchor point="LEFT" relativePoint="RIGHT">
                       <Offset>
@@ -1591,7 +1591,7 @@
             <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check" />
             <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled" />
           </CheckButton>
-          <Button name="$parentButtonReset" text="Reset default positions and settings">
+          <Button name="$parentButtonReset" text="LOC_RESET_DEFAULT_POSITIONS_AND_SETTINGS">
             <!--<FrameSkin skinid="f15d4970-d66d-444e-bb2d-1ad102c87fed" frameid="f15d4973-d66d-444e-bb2d-1ad102c87fed" />-->
             <Size>
               <AbsDimension x="248" y="28" />
@@ -1680,7 +1680,7 @@
             </Anchors>
             <Layers>
               <Layer>
-                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Hide unused buttons">
+                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="LOC_HIDE_UNUSED_BUTTONS">
                   <Anchors>
                     <Anchor point="LEFT" relativePoint="RIGHT">
                       <Offset>
@@ -1731,7 +1731,7 @@
             </Anchors>
             <Layers>
               <Layer>
-                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Show buttons in raid">
+                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="LOC_SHOW_BUTTONS_IN_RAID">
                   <Anchors>
                     <Anchor point="LEFT" relativePoint="RIGHT">
                       <Offset>
@@ -1778,7 +1778,7 @@
             </Anchors>
             <Layers>
               <Layer>
-                <FontString name="$parentLabel" setAllPoints="true" font="Fonts\FRIZQT__.TTF" text="Resize buttons">
+                <FontString name="$parentLabel" setAllPoints="true" font="Fonts\FRIZQT__.TTF" text="LOC_RESIZE_BUTTONS">
                   <FontHeight>
                     <AbsValue val="12" />
                   </FontHeight>
@@ -1905,7 +1905,7 @@
                   </Anchors>
                   <TexCoords left="0.8046875" right="1" top="0" bottom="1" />
                 </Texture>
-                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Layout" justifyH="RIGHT">
+                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="LOC_LAYOUT" justifyH="RIGHT">
                   <Size>
                     <AbsDimension x="236" y="10" />
                   </Size>
@@ -2060,7 +2060,7 @@
             </Anchors>
             <Layers>
               <Layer>
-                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Hide button frames">
+                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="LOC_HIDE_BUTTON_FRAMES">
                   <Anchors>
                     <Anchor point="LEFT" relativePoint="RIGHT">
                       <Offset>
@@ -2111,7 +2111,7 @@
             </Anchors>
             <Layers>
               <Layer>
-                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Disable Sound">
+                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="LOC_DISABLE_SOUND">
                   <Anchors>
                     <Anchor point="LEFT" relativePoint="RIGHT">
                       <Offset>
@@ -2162,7 +2162,7 @@
             </Anchors>
             <Layers>
               <Layer>
-                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="Disable Error Text">
+                <FontString name="$parentText" font="Fonts\FRIZQT__.TTF" text="LOC_DISABLE_ERROR_TEXT">
                   <Anchors>
                     <Anchor point="LEFT" relativePoint="RIGHT">
                       <Offset>
@@ -2237,7 +2237,7 @@
             </Anchors>
             <Layers>
               <Layer>
-                <FontString name="$parentLabel" setAllPoints="true" font="Fonts\FRIZQT__.TTF" text="BananaBar Raid Symbols">
+                <FontString name="$parentLabel" setAllPoints="true" font="Fonts\FRIZQT__.TTF" text="LOC_BANANABAR_RAID_SYMBOLS">
                   <FontHeight>
                     <AbsValue val="16" />
                   </FontHeight>

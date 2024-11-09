@@ -23,13 +23,13 @@
 	<Binding name="BANANA_TARGET_SYMBOL8" header="BANANA_PLUGINNAME">
 		Banana_TargetSymbol8()
 	</Binding>
-	<Binding name="Reset Button Positions" header="BANANA_PLUGINNAME">
+	<Binding name="LOC_RESET_BUTTON_POSITIONS" header="BANANA_PLUGINNAME">
 		Banana_ResetAll();
 	</Binding>
-	<Binding name="Open Config Window" header="BANANA_PLUGINNAME">
+	<Binding name="LOC_OPEN_CONFIG_WINDOW" header="BANANA_PLUGINNAME">
 		Banana_Command("/bananabar");
 	</Binding>
-	<Binding name="Clear all Raid Symbols" header="BANANA_PLUGINNAME">
+	<Binding name="LOC_CLEAR_ALL_RAID_SYMBOLS" header="BANANA_PLUGINNAME">
 		Banana_ClearRaidSymbols();
 	</Binding>
 	

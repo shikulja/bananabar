@@ -1,3 +1,19 @@
+-- Initialize the bananabar table
+bananabar = bananabar or {}
+
+-- Load translation tables
+--bananabar.L = (bananabar_locale[GetLocale()] or bananabar_locale["enUS"])
+bananabar.T = (bananabar_translation[GetLocale()] or bananabar_translation["enUS"])
+
+-- use table index key as translation fallback
+bananabar.T = setmetatable(bananabar.T, { __index = function(tab,key)
+  local value = tostring(key)
+  rawset(tab, key, value)
+  return value
+end})
+
+local T = bananabar.T
+
 BANANA_SYMBOL_COLOR1 = "00f7f26c";
 BANANA_SYMBOL_COLOR2 = "00f69218";
 BANANA_SYMBOL_COLOR3 = "00cb32dd";
@@ -11,16 +27,16 @@ BANANA_PRINT_COLOR = "00c0ffc0";
 BANANA_PRINT_FORMAT = "|c"..BANANA_PRINT_COLOR.."[|c"..BANANA_SYMBOL_COLOR4.."Banana|c"..BANANA_SYMBOL_COLOR4.."Bar|r|c"..BANANA_PRINT_COLOR.."] %s|r";
 
 
-BINDING_HEADER_BANANA_PLUGINNAME = "BananaBar Raid Target Symbols";
-BINDING_NAME_BANANA_TARGET_SYMBOL1 = "Target Symbol 1 ("..RAID_TARGET_1..")";
-BINDING_NAME_BANANA_TARGET_SYMBOL2 = "Target Symbol 2 ("..RAID_TARGET_2..")";
-BINDING_NAME_BANANA_TARGET_SYMBOL3 = "Target Symbol 3 ("..RAID_TARGET_3..")";
-BINDING_NAME_BANANA_TARGET_SYMBOL4 = "Target Symbol 4 ("..RAID_TARGET_4..")";
-BINDING_NAME_BANANA_TARGET_SYMBOL5 = "Target Symbol 5 ("..RAID_TARGET_5..")";
-BINDING_NAME_BANANA_TARGET_SYMBOL6 = "Target Symbol 6 ("..RAID_TARGET_6..")";
-BINDING_NAME_BANANA_TARGET_SYMBOL7 = "Target Symbol 7 ("..RAID_TARGET_7..")";
-BINDING_NAME_BANANA_TARGET_SYMBOL8 = "Target Symbol 8 ("..RAID_TARGET_8..")";
-BINDING_NAME_BANANA_TARGET_SYMBOL9 = "Target Symbol 9 (Huntersmark)";
+BINDING_HEADER_BANANA_PLUGINNAME = T["BananaBar Raid Target Symbols"];
+BINDING_NAME_BANANA_TARGET_SYMBOL1 = T["Target Symbol 1"] .. " ("..RAID_TARGET_1..")";
+BINDING_NAME_BANANA_TARGET_SYMBOL2 = T["Target Symbol 2"] .. " ("..RAID_TARGET_2..")";
+BINDING_NAME_BANANA_TARGET_SYMBOL3 = T["Target Symbol 3"] .. " ("..RAID_TARGET_3..")";
+BINDING_NAME_BANANA_TARGET_SYMBOL4 = T["Target Symbol 4"] .. " ("..RAID_TARGET_4..")";
+BINDING_NAME_BANANA_TARGET_SYMBOL5 = T["Target Symbol 5"] .. " ("..RAID_TARGET_5..")";
+BINDING_NAME_BANANA_TARGET_SYMBOL6 = T["Target Symbol 6"] .. " ("..RAID_TARGET_6..")";
+BINDING_NAME_BANANA_TARGET_SYMBOL7 = T["Target Symbol 7"] .. " ("..RAID_TARGET_7..")";
+BINDING_NAME_BANANA_TARGET_SYMBOL8 = T["Target Symbol 8"] .. " ("..RAID_TARGET_8..")";
+BINDING_NAME_BANANA_TARGET_SYMBOL9 = T["Target Symbol 9 (Huntersmark)"];
 
 --"Interface\TargetingFrame\UI-RaidTargetingIcons"
 local snipershot = "Interface\\Icons\\Ability_Hunter_SniperShot";
@@ -181,9 +197,9 @@ function Banana_OnEvent()
 		if not BANANA_READY then
 			Banana_InitArrays();
 		end
-		Banana_Print("Banana Raid Symbols loaded. Type /bb, /bbr, /banana or /bananabar to open config panel.");
-		Banana_Print("Use Ctrl + RightClick to move buttons")
-		Banana_Print("Use Alt + LeftClick to clear all existing symbols")
+		Banana_Print(T["Banana Raid Symbols loaded. Type /bb, /bbr, /banana or /bananabar to open config panel."]);
+		Banana_Print(T["Use Ctrl + RightClick to move buttons"])
+		Banana_Print(T["Use Alt + LeftClick to clear all existing symbols"])
 
 		if not BANANA_SHOW_EXTRA_INFO then
 			--Banana_Print("First start of BananaBar detected, showing config window.");
@@ -340,8 +356,8 @@ function Banana_ButtonOnClick(mousebutton)
 		Banana_ClearRaidSymbols()
 		return
 	end
-	Banana_Print("Use Ctrl + RightClick to move buttons")
-	Banana_Print("Use Alt + LeftClick to clear all existing symbols")
+	Banana_Print(T["Use Ctrl + RightClick to move buttons"])
+	Banana_Print(T["Use Alt + LeftClick to clear all existing symbols"])
 end
  
 local movingbutton = nil;
@@ -393,7 +409,7 @@ function Banana_ButtonOnEnter()
 		end
 		GameTooltip:Show();
 	else
-		GameTooltip:SetText("Not used\n/bananabar to open config window\nCtrl+RightMouseButton to move buttons");
+		GameTooltip:SetText(T["Not used\n/bananabar to open config window\nCtrl+RightMouseButton to move buttons"]);
 	end
 	
 end
@@ -1114,7 +1130,7 @@ function Banana_CtRaMainTankUpdateByIndex(mtindex)
 
     local f;
     if getglobal(frameName) == nil then
-        Banana_Print("Creating symbol frame for MainTank "..mtindex);
+        Banana_Print(T["Creating symbol frame for MainTank "]..mtindex);
         f = CreateFrame("Frame",frameName,getglobal(ctraframe),"BananaMtSymbolTemplate");
         f:SetFrameStrata("BACKGROUND")
         f:SetPoint("RIGHT", ctraframe, "LEFT", 0, 0);
